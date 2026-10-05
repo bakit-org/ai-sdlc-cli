@@ -2,10 +2,13 @@
 
 ## Global behaviour
 
-- Options: `--project <path>`, `--root <dir>`, `--from-bundle <file>`, `--dry-run`, `--force`, `--yes` (`-y`), `--json`.
-- Exit codes: `0` ok, `1` failure, `2` usage error (unknown option, missing value, invalid target, missing `--project` / `--yes` without a terminal, download requested but not available).
+- Options: `--project <path>`, `--root <dir>`, `--from-bundle <file>`, `--dry-run`, `--force`, `--yes` (`-y`), `--json`, `--no-tui`.
+- Exit codes: `0` ok, `1` failure or a cancelled interactive screen, `2` usage error (unknown option, missing value, invalid target, missing `--project` / `--yes` without a terminal, download requested but not available).
 - `--json` prints one JSON document on stdout and never prompts; it therefore needs `--project`, and `--yes` for runs that write.
 - Target rules: the directory must exist, must not be your home directory or a filesystem root. A directory without `.git` is accepted with a warning.
+
+- `init` is `install` with a guided wizard when stdin and stdout are terminals and none of `--yes`, `--json`, `--no-tui`, `--dry-run` or `TERM=dumb` applies; in every other case it behaves exactly like `install`. Without a command, a terminal gets a menu (usage text and exit `2` otherwise). `update`, `doctor` and `uninstall` print coloured result views on a terminal. `--no-tui` always gives the plain text. See [tui.md](tui.md).
+- Cancelling an interactive screen with Esc or Ctrl-C changes nothing and exits `1`. A `SIGINT` or `SIGTERM` that arrives from outside restores the terminal and exits `130` or `143`.
 
 ## Choosing the project
 

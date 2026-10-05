@@ -9,14 +9,16 @@ Command-line installer for the ai-sdlc Claude Code harness. It puts the BA / Dev
 ## Commands
 
 ```
+ai-sdlc init      [--project <path>] [--root <dir>] --from-bundle <file> [--force] [--no-tui]
 ai-sdlc install   [--project <path>] [--root <dir>] --from-bundle <file> [--dry-run] [--force] [--yes] [--json]
 ai-sdlc update    [--project <path>] [--root <dir>] --from-bundle <file> [--dry-run] [--force] [--yes] [--json]
 ai-sdlc doctor    [--project <path>] [--from-bundle <file>] [--json]
 ai-sdlc uninstall [--project <path>] [--dry-run] [--yes] [--json]
 ai-sdlc version
+ai-sdlc                  # in a terminal: menu (Install / Update / Doctor / Uninstall / Quit)
 ```
 
-Exit codes: `0` success, `1` the operation failed, `2` wrong usage.
+Exit codes: `0` success, `1` the operation failed or you cancelled (Esc / Ctrl-C), `2` wrong usage. If the process is stopped from outside, the terminal is restored first and the exit code is `130` (SIGINT) or `143` (SIGTERM).
 
 Downloading the latest release is not implemented yet, so `install` and `update` currently need `--from-bundle <file>` (a release bundle; the `<file>.sha256` beside it is verified when present).
 
@@ -30,6 +32,12 @@ ai-sdlc install --from-bundle ./ai-sdlc-0.1.0.bundle.json
 Without `--project` the CLI lists the git repositories directly under the current directory (and its parent), or under `--root`, plus an "enter a path" option. It shows the full plan and asks before writing. In scripts and CI pass `--project <path> --yes`; without a terminal the CLI refuses to guess and exits with `2`.
 
 Use `--dry-run` first to see exactly what a run would do. A real run performs the same list.
+
+## Interactive mode
+
+In a terminal, `ai-sdlc init` is a guided install: a gradient banner, an environment check, a filterable project list (git repositories next to you plus recent projects, with `installed` / `not installed` / `no .git` badges), a review of what will change, a progress bar and a result panel with next steps. Running `ai-sdlc` with no command opens a menu, and `update`, `doctor` and `uninstall` print coloured result views. Esc or Ctrl-C at any step writes nothing and restores the terminal.
+
+It switches itself off for `--json`, `--yes`, `--no-tui`, `TERM=dumb` and whenever stdin or stdout is not a terminal; then the plain output and exit codes apply. Colours follow `NO_COLOR` and the terminal's capability, with an ASCII fallback. Details and key bindings: [docs/tui.md](docs/tui.md).
 
 ## What gets installed
 
