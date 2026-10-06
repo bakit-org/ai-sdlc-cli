@@ -1,0 +1,29 @@
+# Pushing a tag like v0.1.2 tests the CLI and publishes it to npm.
+# Uses npm trusted publishing (OIDC): no npm token is stored in this repository.
+# One-time setup on npmjs.com: package settings > Trusted Publisher > GitHub
+# Actions, with this repository and the workflow file name "publish.yml".
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Tag must match package.json version
+        run: |
+          v="v$(node -p "require('./package.json').version")"
+          [ "$v" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME does not match package.json ($v)"; exit 1; }
+      - run: npm test
+      - run: npm publish --access public
