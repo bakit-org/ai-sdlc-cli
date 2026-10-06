@@ -25,4 +25,4 @@ jobs:
           v="v$(node -p "require('./package.json').version")"
           [ "$v" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME does not match package.json ($v)"; exit 1; }
       - run: npm test
-      - run: npm publish --access public
+      - run: npm publish --access public --loglevel verbose
