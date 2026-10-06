@@ -92,6 +92,7 @@ test('the wizard stops cleanly when the repository cannot be read, pointing at t
   const code = await start(term, ws, ['init', '--root', ws.root], { runCommand: inj.runCommand, releaseOptions: inj.releaseOptions });
   assert.strictEqual(code, 1);
   assert.match(term.plain(), /Access to acme\/kit\s+no read access to acme\/kit — ask the repo owner to grant read access/);
+  assert.match(term.stderrText(), /grant read access: https:\/\/github\.com\/acme\/kit /);
   assert.match(term.stderrText(), /--from-bundle/);
   assert.deepStrictEqual(fs.readdirSync(ws.repo('zeta-app')), ['.git']);
   assert.strictEqual(term.stdin.listenerCount('data'), 0);

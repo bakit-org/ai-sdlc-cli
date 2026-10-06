@@ -44,6 +44,7 @@ for (const code of [403, 404]) {
     mock.hooks.push(answer(/^\/repos\/acme\/kit$/, code));
     const r = await failing(mock);
     assert.match(r.err, /no read access to acme\/kit — ask the repo owner to grant read access/);
+    assert.match(r.err, /grant read access: https:\/\/github\.com\/acme\/kit /);
     assert.match(r.err, /--from-bundle/);
   }));
 }

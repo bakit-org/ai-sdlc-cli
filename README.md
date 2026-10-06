@@ -44,7 +44,7 @@ Exit codes: `0` success, `1` the operation failed or you cancelled (Esc / Ctrl-C
 
 Without `--from-bundle`, `install` and `update` download the latest release of the payload repository (or the one named by `--version <tag>`, for example `--version 1.2.0`), check its `.sha256` and the per-file hashes, and install it. With `--from-bundle <file>` they use a local release bundle instead (the `<file>.sha256` beside it is verified when present) and never touch the network. `ai-sdlc version --check` shows the latest release and, for the current or `--project` directory, whether the installed payload is behind it.
 
-Failures are plain messages: an invalid or expired token, a repository you cannot read (ask the repo owner to grant read access), a GitHub rate limit (with the reset time), or no network (use `--from-bundle`).
+Failures are plain messages: an invalid or expired token, a repository you cannot read (the message names `https://github.com/<owner>/<repo>` and says to ask the repo owner to grant read access), a GitHub rate limit (with the reset time), or no network (use `--from-bundle`).
 
 ## Choosing the project
 

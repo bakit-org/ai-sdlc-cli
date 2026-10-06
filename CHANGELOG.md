@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The "no read access" message now also shows the repository URL (`https://github.com/<owner>/<repo>`) next to the line to ask the repo owner to grant read access.
+- Test coverage for `update` when a release renames a skill folder (old unmodified files removed, a user-edited old file kept, new files added).
+
 ## 0.1.0 - 2026-10-06
 
 Initial release.

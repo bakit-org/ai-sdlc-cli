@@ -98,7 +98,7 @@ test('403 with an SSO header tells the user to authorize the token for SSO', () 
 }));
 
 test('the access failure detail names --from-bundle exactly once', async () => {
-  const noAccess = new CliError('no read access to acme/kit — ask the repo owner to grant read access (or install from a local file with --from-bundle <file>)');
+  const noAccess = new CliError('no read access to acme/kit — ask the repo owner to grant read access: https://github.com/acme/kit (or install from a local file with --from-bundle <file>)');
   const client = { describe: async () => ({ repo: 'acme/kit', source: 'GH_TOKEN', defaultBase: true }), checkAccess: async () => { throw noAccess; } };
   const [, access] = githubChecks(client);
   assert.strictEqual((await access()).detail.split('--from-bundle').length - 1, 1);

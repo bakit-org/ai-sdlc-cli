@@ -33,7 +33,7 @@ Credentials, first match wins: environment `AI_SDLC_GITHUB_TOKEN`, `GH_TOKEN`, `
 | no credentials | lists the env vars, `gh auth login` and the git credential helper; exit `1` |
 | 403 with an SSO header | the organization uses SAML SSO: authorize the token for it; exit `1` |
 | 401 | token invalid or expired (names the source, not the value); exit `1` |
-| 403 / 404 on the repository | `no read access to <owner>/<repo> — ask the repo owner to grant read access`; exit `1` |
+| 403 / 404 on the repository | `no read access to <owner>/<repo> — ask the repo owner to grant read access: https://github.com/<owner>/<repo>`, also pointing at `--from-bundle <file>`; exit `1` |
 | rate limit (403/429) | shows the reset time (or the retry delay); exit `1` |
 | offline, DNS, timeout | suggests `--from-bundle <file>`; exit `1` |
 | release without bundle or checksum asset | names what is missing; exit `1` |
@@ -68,6 +68,8 @@ Three-way comparison per managed file: hash recorded at install, file on disk, f
 | unchanged | no longer shipped | deleted |
 | edited | no longer shipped | kept, no longer tracked |
 | not tracked | new in bundle | added (kept + `.new` if a different file is in the way) |
+
+A renamed or moved folder (for example a skill folder that gains a prefix) is the last two "no longer shipped" rows plus the "new in bundle" row: the old files that you did not edit are deleted (empty folders are removed too), an old file you edited stays where it is and is no longer tracked, and the new files are added. A project that already has a different file at a new path keeps it and gets `<file>.new` beside it.
 
 Starter files (`user-once`) are created only when they are new in the bundle. A starter file the previous install tracked and you have since deleted is not re-created by `update` (it is listed as `skip-deleted`; `doctor` still warns that it is missing). `install --force` does create it again. Existing starter files are never overwritten.
 
