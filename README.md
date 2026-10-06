@@ -1,11 +1,11 @@
-# ai-sdlc-cli
+# @bakit-org/ai-sdlc-cli
 
 Command-line installer for the ai-sdlc Claude Code harness. It puts the BA / Dev / Test agents, skills and hooks into a project repository of your choice, keeps them up to date without overwriting your edits, and removes them cleanly.
 
 ## Quick start
 
 ```sh
-npm install -g ai-sdlc-cli                  # once the package is published; until then: npm install -g ./ai-sdlc-cli-0.1.0.tgz
+npm install -g @bakit-org/ai-sdlc-cli       # installs the `ai-sdlc` command
 gh auth login                               # or export GH_TOKEN=... (needs read access to the kit repository)
 cd ~/projects && ai-sdlc init               # guided install: pick a project, review, apply
 ai-sdlc doctor --project <path>             # confirm the install is intact

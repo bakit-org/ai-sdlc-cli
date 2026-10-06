@@ -1,11 +1,34 @@
 {
-  "name": "ai-sdlc-cli",
+  "name": "@bakit-org/ai-sdlc-cli",
   "version": "0.1.0",
   "description": "Installs, updates, checks and removes the ai-sdlc Claude Code harness in a project repository.",
   "license": "UNLICENSED",
-  "bin": { "ai-sdlc": "bin/ai-sdlc.js" },
-  "engines": { "node": ">=18" },
-  "files": ["bin", "lib", "docs", "README.md"],
-  "scripts": { "test": "node --test" },
-  "keywords": ["claude-code", "sdlc", "cli"]
+  "bin": {
+    "ai-sdlc": "bin/ai-sdlc.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "docs",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "claude-code",
+    "sdlc",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bakit-org/ai-sdlc-cli.git"
+  },
+  "homepage": "https://github.com/bakit-org/ai-sdlc-cli#readme"
 }
