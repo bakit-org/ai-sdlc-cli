@@ -2,8 +2,28 @@
 
 Command-line installer for the ai-sdlc Claude Code harness. It puts the BA / Dev / Test agents, skills and hooks into a project repository of your choice, keeps them up to date without overwriting your edits, and removes them cleanly.
 
+## Quick start
+
+```sh
+npm install -g ai-sdlc-cli                  # once the package is published; until then: npm install -g ./ai-sdlc-cli-0.1.0.tgz
+gh auth login                               # or export GH_TOKEN=... (needs read access to the kit repository)
+cd ~/projects && ai-sdlc init               # guided install: pick a project, review, apply
+ai-sdlc doctor --project <path>             # confirm the install is intact
+```
+
+Scripted, or without network access:
+
+```sh
+ai-sdlc install --project <path> --yes                                  # latest kit release from GitHub
+ai-sdlc install --project <path> --from-bundle ./ai-sdlc-0.1.0.bundle.json --yes
+```
+
+Add `--dry-run` first to see exactly what a run would do; a real run performs the same list.
+
+## Requirements and access
+
 - Prerequisites: Node 18 or newer, and read access to the GitHub repository that publishes the kit (`bakit-org/ai-sdlc-kit`; ask its owner if you do not have it). No runtime dependencies.
-- GitHub credentials come from what you already use, first match wins: the `AI_SDLC_GITHUB_TOKEN`, `GH_TOKEN` or `GITHUB_TOKEN` environment variable, then `gh auth login` (the GitHub CLI), then your git credential helper for `github.com`. The token is only sent to GitHub's API and is never printed or stored. Tokens found automatically (`GH_TOKEN`, `GITHUB_TOKEN`, `gh`, git credential helper) are only used for the public API at `https://api.github.com`; if `AI_SDLC_GITHUB_API` points anywhere else (for example GitHub Enterprise) only an explicit `AI_SDLC_GITHUB_TOKEN` is used. For a repository behind SAML SSO, authorize the token for the organization.
+- GitHub credentials come from what you already use, first match wins: the `AI_SDLC_GITHUB_TOKEN`, `GH_TOKEN` or `GITHUB_TOKEN` environment variable, then `gh auth login` (the GitHub CLI), then your git credential helper for `github.com`. The token is only sent to GitHub's API and is never printed or stored. Tokens found automatically (`GH_TOKEN`, `GITHUB_TOKEN`, `gh`, git credential helper) are only used for the public API at `https://api.github.com`; if `AI_SDLC_GITHUB_API` points anywhere else (for example GitHub Enterprise) only an explicit `AI_SDLC_GITHUB_TOKEN` is used. The token needs read access to the kit repository's contents (for example a fine-grained token with `Contents: read` on it, or a classic token with the `repo` scope). For a repository behind SAML SSO, authorize the token for the organization.
 - Downloads use Node's built-in `fetch`, which does not honour `HTTPS_PROXY` / `HTTP_PROXY`. Behind a proxy that GitHub is only reachable through, download the release bundle by other means and use `--from-bundle <file>`.
 - Everything is scoped to the project you pick. Nothing is written to `~/.claude`.
 - Works for both the Claude Code CLI and the VS Code extension (they share `.claude/`, `CLAUDE.md` and `.claude/settings.json`).
@@ -26,18 +46,9 @@ Without `--from-bundle`, `install` and `update` download the latest release of t
 
 Failures are plain messages: an invalid or expired token, a repository you cannot read (ask the repo owner to grant read access), a GitHub rate limit (with the reset time), or no network (use `--from-bundle`).
 
-## Quick start
-
-```sh
-npm install -g ai-sdlc-cli        # once the package is published
-gh auth login                     # or export GH_TOKEN=... (needs read access to the kit repository)
-ai-sdlc install                   # downloads the latest kit release
-ai-sdlc install --from-bundle ./ai-sdlc-0.1.0.bundle.json   # or install from a local bundle
-```
+## Choosing the project
 
 Without `--project` the CLI lists the git repositories directly under the current directory (and its parent), or under `--root`, plus an "enter a path" option. It shows the full plan and asks before writing. In scripts and CI pass `--project <path> --yes`; without a terminal the CLI refuses to guess and exits with `2`.
-
-Use `--dry-run` first to see exactly what a run would do. A real run performs the same list.
 
 ## Interactive mode
 
@@ -60,6 +71,20 @@ It switches itself off for `--json`, `--yes`, `--no-tui`, `TERM=dumb` and whenev
 Note: `.claude/ai-sdlc.manifest.json` may hold a copy of your original `.claude/settings.json` text so uninstall can restore it exactly. Do not publish it.
 
 See [docs/cli.md](docs/cli.md) for the details (update rules, doctor checks, bundle format, safety guarantees).
+
+## Update, uninstall and offline use
+
+- `ai-sdlc update` compares the installed files with the new release and your disk. Unmodified managed files are replaced; a file you edited is kept and the new version is written next to it as `<file>.new`; starter files are never touched. `--dry-run` lists the result first.
+- `ai-sdlc uninstall` removes what the CLI installed and nothing else (see above for what stays).
+- `--from-bundle <file>` installs or updates from a local `ai-sdlc-<version>.bundle.json` with no network access. The `<file>.sha256` beside it is verified when present. Use it behind a proxy, offline, or to try a release before publishing it.
+- `ai-sdlc doctor` is read-only: Node version, a leftover run journal, manifest, managed files (edited = warning, missing = failure), hook registration and scripts, the `CLAUDE.md` block, starter files, installed version, and a note when optional Python 3 is missing. It exits `1` if a check fails. `--json` for machine output.
+
+## Known limits
+
+- Node's `fetch` ignores `HTTPS_PROXY` / `HTTP_PROXY` (use `--from-bundle`).
+- Windows consoles have not been verified; the interactive screens fall back to ASCII on terminals without UTF-8.
+- The bundle checksum comes from the same release as the bundle: it detects corruption, not tampering by someone who can edit the release.
+- A symlinked `CLAUDE.md` or `settings.json` is refused.
 
 ## Development
 
