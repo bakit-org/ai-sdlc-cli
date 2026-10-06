@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 - 2026-10-07
+
+- No functional change. First release published from GitHub Actions (npm trusted publishing) when a `v*` tag is pushed.
+
 ## 0.1.1 - 2026-10-07
 
 - The "no read access" message now also shows the repository URL (`https://github.com/<owner>/<repo>`) next to the line to ask the repo owner to grant read access.

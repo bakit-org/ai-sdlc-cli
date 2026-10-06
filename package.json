@@ -1,6 +1,6 @@
 {
   "name": "@bakit-org/ai-sdlc-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Installs, updates, checks and removes the ai-sdlc Claude Code harness in a project repository.",
   "license": "MIT",
   "bin": {
