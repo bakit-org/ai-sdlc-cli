@@ -86,6 +86,10 @@ See [docs/cli.md](docs/cli.md) for the details (update rules, doctor checks, bun
 - The bundle checksum comes from the same release as the bundle: it detects corruption, not tampering by someone who can edit the release.
 - A symlinked `CLAUDE.md` or `settings.json` is refused.
 
+## License
+
+This installer is MIT licensed (see `LICENSE`). The kit it installs (`bakit-org/ai-sdlc-kit`) is a separate, commercially licensed product; access is granted by its owner.
+
 ## Development
 
 ```sh

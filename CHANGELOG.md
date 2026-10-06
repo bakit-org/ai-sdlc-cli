@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 - 2026-10-07
 
 - The "no read access" message now also shows the repository URL (`https://github.com/<owner>/<repo>`) next to the line to ask the repo owner to grant read access.
 - Test coverage for `update` when a release renames a skill folder (old unmodified files removed, a user-edited old file kept, new files added).
 - Test coverage for `update` when a release renames agent files (the payload's `sdlc-` agent namespace): old unmodified agent files removed, a user-edited old agent file kept, new agent files added.
+
+- Licensed under MIT (`LICENSE`). The kit that this tool installs is a separate, commercially licensed product.
 
 ## 0.1.0 - 2026-10-06
 
