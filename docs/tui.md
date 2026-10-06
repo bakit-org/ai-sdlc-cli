@@ -8,7 +8,8 @@ When you run the CLI in a terminal it can guide you with interactive screens tha
 |---|---|---|
 | `ai-sdlc init` | guided install (below) | same as `install` |
 | `ai-sdlc` (no command) | menu: Install, Update, Doctor, Uninstall, Quit | usage text, exit `2` |
-| `ai-sdlc update`, `doctor`, `uninstall` | coloured result views (checklist, panels); prompts as before | plain text |
+| `ai-sdlc update` | the same guided flow as `init` (current folder, review, progress, result; "Up to date" when there is nothing to do) | plain text |
+| `ai-sdlc doctor`, `uninstall` | coloured result views (checklist, panels); prompts as before | plain text |
 | `ai-sdlc install` | unchanged (numbered picker, `[y/N]`) | unchanged |
 
 "In a terminal" means stdin and stdout are both terminals. Interactive mode is never used when any of these is true, and the plain behaviour (output, prompts, exit codes `0`/`1`/`2`) is unchanged:
@@ -22,7 +23,7 @@ When you run the CLI in a terminal it can guide you with interactive screens tha
 ## The guided install (`ai-sdlc init`)
 
 1. **Banner and checks.** A banner, a dim status line (`Using: node 24 | git ✔ | kit source: bundle file`) and one line per check: Node version, git, and the kit source. With `--from-bundle <file>` the source is that file. Without it the source is the GitHub release of the payload repository and two more checks run (with the spinner): `GitHub token` (shows only where it was found, for example `found via GH_TOKEN`) and `Access to <owner>/<repo>`. If either fails, the failure line explains it (owner contact for missing read access) and offers `--from-bundle <file>`; the run ends with exit `1` before the project list and nothing is written. The release is then downloaded behind a spinner, verified and read. Ctrl-C or Esc during either spinner cancels it immediately (the request and any helper process are stopped, temporary files removed; exit `1`, nothing written). Further checks plug in through the `extraChecks` list of `runPreflight` in `lib/tui/flows/preflight.js`.
-2. **Project.** A list of git repositories found one level under `--root` (default: the current directory and its parent) plus recently used projects, newest first. Each row has a badge: `not installed`, `installed vX → update`, or `no .git ⚠`. Type to filter; `Enter a path…` opens a path field with Tab / Shift-Tab completion. `~`, files, missing paths and filesystem roots are refused with an inline message.
+2. **Project.** The current folder, unless you pass `--project`, or `--root` (picker below), or the current folder cannot be a project (home directory, filesystem root; the picker then opens with the reason). With the current folder a problem such as "already installed" (init) or "not installed" (update) ends the run with a message. The picker is a list of git repositories found one level under `--root` (default: the current directory and its parent) plus recently used projects, newest first. Each row has a badge: `not installed`, `installed vX → update`, or `no .git ⚠`. Type to filter; `Enter a path…` opens a path field with Tab / Shift-Tab completion. `~`, files, missing paths and filesystem roots are refused with an inline message.
 3. **Review.** What will happen by class (managed files, starter files, the `CLAUDE.md` block, hooks) with a note that only the marked block of `CLAUDE.md` is managed. `d` toggles the full file list. Nothing has been written at this point.
 4. **Install.** The project lock is taken, the plan is computed again under the lock, and the changes are applied with a progress bar showing the current file.
 5. **Result.** What was written and the next steps: open the folder in Claude Code, fill in `ai-sdlc/project.md`, run `ai-sdlc doctor`.

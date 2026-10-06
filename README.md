@@ -7,9 +7,12 @@ Command-line installer for the ai-sdlc Claude Code harness. It puts the BA / Dev
 ```sh
 npm install -g @bakit-org/ai-sdlc-cli       # installs the `ai-sdlc` command
 gh auth login                               # or export GH_TOKEN=... (needs read access to the kit repository)
-cd ~/projects && ai-sdlc init               # guided install: pick a project, review, apply
-ai-sdlc doctor --project <path>             # confirm the install is intact
+mkdir my-project && cd my-project           # or any existing project folder
+ai-sdlc init                                # guided install into this folder: checks access, review, apply
+ai-sdlc doctor                              # confirm the install is intact
 ```
+
+Later, to bring a project up to date: `cd` into it and run `ai-sdlc update` (guided, with a review before anything is written). Bare `ai-sdlc` opens a menu for the current folder.
 
 Scripted, or without network access:
 
@@ -48,11 +51,11 @@ Failures are plain messages: an invalid or expired token, a repository you canno
 
 ## Choosing the project
 
-Without `--project` the CLI lists the git repositories directly under the current directory (and its parent), or under `--root`, plus an "enter a path" option. It shows the full plan and asks before writing. In scripts and CI pass `--project <path> --yes`; without a terminal the CLI refuses to guess and exits with `2`.
+Without `--project`, `init` and `update` in a terminal act on the current folder. Plain mode (`--no-tui`) does too for `update`, `doctor` and `uninstall` when ai-sdlc is installed there; otherwise it lists the git repositories directly under the current directory (and its parent), or under `--root`, plus an "enter a path" option. It shows the full plan and asks before writing. In scripts and CI pass `--project <path> --yes`; without a terminal the CLI refuses to guess and exits with `2`.
 
 ## Interactive mode
 
-In a terminal, `ai-sdlc init` is a guided install: a gradient banner, an environment check, a filterable project list (git repositories next to you plus recent projects, with `installed` / `not installed` / `no .git` badges), a review of what will change, a progress bar and a result panel with next steps. Running `ai-sdlc` with no command opens a menu, and `update`, `doctor` and `uninstall` print coloured result views. Esc or Ctrl-C at any step writes nothing and restores the terminal.
+In a terminal, `ai-sdlc init` is a guided install into the current folder and `ai-sdlc update` is the same guided flow for an installed project: a gradient banner, an environment check (including read access to the kit), a review of what will change, a progress bar and a result panel with next steps. Run it from the home directory or a filesystem root, or pass `--root <dir>`, and it shows a filterable project list instead (git repositories next to you plus recent projects, with `installed` / `not installed` / `no .git` badges). Running `ai-sdlc` with no command opens a menu, and `doctor` and `uninstall` print coloured result views. Esc or Ctrl-C at any step writes nothing and restores the terminal.
 
 It switches itself off for `--json`, `--yes`, `--no-tui`, `TERM=dumb` and whenever stdin or stdout is not a terminal; then the plain output and exit codes apply. Colours follow `NO_COLOR` and the terminal's capability, with an ASCII fallback. Details and key bindings: [docs/tui.md](docs/tui.md).
 

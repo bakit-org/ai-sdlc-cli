@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3 - 2026-10-07
+
+- `ai-sdlc init` in a terminal installs into the current folder (no project picker; a folder without `.git` is fine and shows a note). The picker opens only for `--root`, or when the current folder is the home directory or a filesystem root.
+- `ai-sdlc update` in a terminal is now a guided flow like `init`: environment and access check, review (old and new version, per-class counts), progress, result. It says "Up to date" when the installed release is already the latest and nothing else would change. The menu's Update entry uses it.
+- Plain `update`, `doctor` and `uninstall` without `--project` or `--root` use the current folder when ai-sdlc is installed there.
+- Behaviour change: on a terminal, `update --project <path>` now runs the guided flow (review screen) instead of the plain list and `[y/N]` prompt. Use `--yes` or `--no-tui` for the plain behaviour in scripts.
+- The current folder is used as it is: nothing looks for a repository root above it. From a subfolder, `init` installs into that subfolder; `update` opens the project picker when ai-sdlc is not installed in the current folder.
+- An older release than the installed one is flagged on the update review screen.
+
 ## 0.1.2 - 2026-10-07
 
 - No functional change. First release published from GitHub Actions (npm trusted publishing) when a `v*` tag is pushed.

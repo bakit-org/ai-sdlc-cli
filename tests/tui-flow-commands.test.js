@@ -92,7 +92,7 @@ test('bare ai-sdlc: without a terminal it prints usage and exits 2, as before', 
   assert.match(term.stderrText(), /Usage: ai-sdlc/);
 });
 
-test('doctor, update and uninstall print coloured result views on a terminal; --no-tui and --json keep the plain text', async () => {
+test('doctor and uninstall print coloured result views and update is guided on a terminal; --no-tui and --json keep the plain text', async () => {
   const { bundle, xdg, home } = setup();
   const project = newProject();
   assert.strictEqual((await runCli(['install', '--project', project, '--from-bundle', bundle, '--yes'])).code, 0);
@@ -119,13 +119,14 @@ test('doctor, update and uninstall print coloured result views on a terminal; --
   }
 
   const upd = termFor(xdg, colour);
-  upd.stdin.write('y\n');
-  assert.strictEqual(await run(['update', '--project', project, '--from-bundle', bundle], upd.runEnv({ cwd: project, home })), 0, upd.stderrText());
-  assert.match(upd.plain(), /ai-sdlc update/);
-  assert.match(upd.plain(), /restore\s+\.claude\/agents\/alpha\.md/);
-  assert.match(upd.plain(), /Done/);
+  const updDone = run(['update', '--project', project, '--from-bundle', bundle], upd.runEnv({ cwd: project, home }));
+  await upd.waitFor(/Review/);
+  assert.match(upd.plain(), /restore 1/);
+  await upd.send(KEYS.enter);
+  assert.strictEqual(await updDone, 0, upd.stderrText());
+  assert.match(upd.plain(), /Updated/);
   assert.strictEqual(read(project, '.claude/agents/alpha.md'), '# alpha v1\n');
-  assert.doesNotMatch(upd.plain(), /^done\.$/m);
+  assert.deepStrictEqual(upd.stdin.rawCalls, [true, false], 'update runs as a guided session');
 
   const un = termFor(xdg, colour);
   un.stdin.write('y\n');
