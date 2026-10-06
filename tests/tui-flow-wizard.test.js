@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { exists, read, runCli } = require('./helpers');
+const { exists, read, runCli, NO_CREDENTIALS } = require('./helpers');
 const { KEYS } = require('./tui-helpers');
 const { MANIFEST, workspace, termFor, start, assertRestored, untouched } = require('./tui-wizard-helpers');
 
@@ -90,14 +90,15 @@ test('resize while picking redraws the box at the new width', async () => {
   assert.strictEqual(await done, 1);
 });
 
-test('without --from-bundle the preflight says the release download is unavailable and the run exits 2', async () => {
+test('without --from-bundle and without credentials the preflight shows the failed token check and the run exits 1', async () => {
   const ws = workspace();
   const term = termFor(ws);
-  const code = await start(term, ws, ['init', '--root', ws.root]);
-  assert.strictEqual(code, 2);
-  assert.match(term.plain(), /release download unavailable in this build/);
-  assert.match(term.plain(), /kit source: none/);
-  assert.match(term.stderrText(), /not implemented yet; use --from-bundle/);
+  const code = await start(term, ws, ['init', '--root', ws.root], { runCommand: NO_CREDENTIALS.runCommand });
+  assert.strictEqual(code, 1);
+  assert.match(term.plain(), /Kit source: GitHub release/);
+  assert.match(term.plain(), /GitHub token\s+not found: set AI_SDLC_GITHUB_TOKEN/);
+  assert.match(term.stderrText(), /GitHub token: not found/);
+  assert.match(term.stderrText(), /--from-bundle/);
   untouched(ws);
   assertRestored(term);
 });

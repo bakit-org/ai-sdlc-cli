@@ -53,7 +53,7 @@ function newProject(files = {}) {
 }
 
 // Runs the CLI in-process with captured output. `stdin` is a string of scripted input.
-async function runCli(args, { cwd, isTTY = false, stdin = '', home } = {}) {
+async function runCli(args, { cwd, isTTY = false, stdin = '', home, ...inject } = {}) {
   const input = new PassThrough();
   if (stdin) input.write(stdin);
   input.end();
@@ -63,6 +63,7 @@ async function runCli(args, { cwd, isTTY = false, stdin = '', home } = {}) {
   const code = await run(args, {
     cwd: cwd || process.cwd(), isTTY, stdin: input, stdout: sink(out), stderr: sink(err), home: home || tmpDir('ai-sdlc-home-'),
     probePython: () => null,
+    ...inject,
   });
   return { code, out: out.join(''), err: err.join('') };
 }
@@ -80,4 +81,7 @@ function walk(dir) {
 // A process id that is certainly not running (a child that already exited).
 const deadPid = () => spawnSync(process.execPath, ['-e', '0']).pid;
 
-module.exports = { deadPid, sha, tmpDir, makeBundle, writeBundle, newProject, runCli, read, exists, walk };
+// Injected environment in which no GitHub credentials exist anywhere (no env vars, no gh, no git helper).
+const NO_CREDENTIALS = { env: {}, runCommand: async () => ({ code: null, stdout: '' }) };
+
+module.exports = { NO_CREDENTIALS, deadPid, sha, tmpDir, makeBundle, writeBundle, newProject, runCli, read, exists, walk };

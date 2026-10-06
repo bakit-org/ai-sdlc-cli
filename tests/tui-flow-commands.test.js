@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { run } = require('../lib/commands');
 const { shouldUseTui, shouldRunWizard } = require('../lib/tui/launch');
-const { tmpDir, makeBundle, writeBundle, newProject, exists, read, runCli } = require('./helpers');
+const { tmpDir, makeBundle, writeBundle, newProject, exists, read, runCli, NO_CREDENTIALS } = require('./helpers');
 const { makeTerm, KEYS } = require('./tui-helpers');
 
 const ESC = /\x1b\[/;
@@ -39,7 +39,7 @@ test('init without a terminal is exactly install', async () => {
   assert.strictEqual(read(a, '.claude/ai-sdlc.manifest.json').length, read(b, '.claude/ai-sdlc.manifest.json').length);
   assert.strictEqual((await runCli(['init'])).code, 2, 'still needs --project without a terminal');
   assert.strictEqual((await runCli(['init', '--project', newProject(), '--from-bundle', bundle])).code, 2, 'and --yes');
-  assert.strictEqual((await runCli(['init', '--project', newProject(), '--yes'])).code, 2, 'and a bundle');
+  assert.strictEqual((await runCli(['init', '--project', newProject(), '--yes'], NO_CREDENTIALS)).code, 1, 'without a bundle it needs GitHub credentials');
 });
 
 test('--yes, --json, --no-tui and TERM=dumb keep the plain flow even on a terminal', async () => {

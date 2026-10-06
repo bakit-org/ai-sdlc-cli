@@ -5,7 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { PassThrough } = require('stream');
-const { tmpDir, makeBundle, writeBundle, newProject, runCli, exists } = require('./helpers');
+const { tmpDir, makeBundle, writeBundle, newProject, runCli, exists, NO_CREDENTIALS } = require('./helpers');
 const { createPrompter, pickProject, findRepos } = require('../lib/project-picker');
 
 const sink = () => {
@@ -109,13 +109,16 @@ test('non-interactive runs need --project and --yes, otherwise exit 2', async ()
   assert.strictEqual((await runCli(['install', '--project', project, '--from-bundle', bundle, '--dry-run'])).code, 0);
 });
 
-test('install/update without --from-bundle explain that download is not implemented (exit 2)', async () => {
+test('install/update without --from-bundle and without GitHub credentials explain how to authenticate (exit 1)', async () => {
   const project = newProject();
   for (const cmd of ['install', 'update']) {
-    const r = await runCli([cmd, '--project', project, '--yes']);
-    assert.strictEqual(r.code, 2);
-    assert.match(r.err, /not implemented yet; use --from-bundle/);
+    const r = await runCli([cmd, '--project', project, '--yes'], NO_CREDENTIALS);
+    assert.strictEqual(r.code, 1);
+    assert.match(r.err, /no GitHub credentials found/);
+    assert.match(r.err, /AI_SDLC_GITHUB_TOKEN/);
+    assert.match(r.err, /--from-bundle/);
   }
+  assert.ok(!exists(project, '.claude'));
 });
 
 test('usage errors exit 2: unknown command, unknown flag, missing value, stray argument', async () => {
